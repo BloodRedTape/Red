@@ -1,0 +1,9 @@
+[submodule "StraitXPackages/Base"]
+	path = StraitXPackages/Base
+	url = git@github.com:StraitX/Base.git
+[submodule "StraitXPackages/ImGui"]
+	path = StraitXPackages/ImGui
+	url = git@github.com:StraitX/ImGui.git
+[submodule "StraitXPackages/2D"]
+	path = StraitXPackages/2D
+	url = git@github.com:StraitX/2D.git
