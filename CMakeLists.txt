@@ -6,6 +6,10 @@ add_subdirectory(StraitXPackages/Base)
 add_subdirectory(StraitXPackages/ImGui)
 add_subdirectory(StraitXPackages/2D)
 
+set(BOX2D_BUILD_TESTBED OFF)
+set(BOX2D_BUILD_UNIT_TESTS OFF)
+add_subdirectory(thirdparty/box2d)
+
 set(RED_SOURCES
     sources/main.cpp
     sources/foundation/application.cpp
@@ -18,7 +22,8 @@ set(RED_INCLUDE
 )
 
 add_executable(Red ${RED_SOURCES})
-target_link_libraries(Red StraitXBase StraitXImGui StraitX2D)
+target_link_libraries(Red StraitXBase StraitXImGui StraitX2D box2d)
 target_include_directories(Red
     PUBLIC ${RED_INCLUDE}
+    PUBLIC thirdparty/box2d/include
 )

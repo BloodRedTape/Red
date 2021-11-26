@@ -2,8 +2,10 @@
 #define GAME_LAYER_HPP
 
 #include <core/list.hpp>
+#include <core/os/clock.hpp>
 #include "utils/layers.hpp"
 #include "2d/rect_renderer.hpp"
+#include <box2d/b2_world.h>
 
 struct Rect{
     Vector2f Position;
@@ -16,6 +18,12 @@ private:
     RectRenderer m_Renderer;
 
     List<Rect> m_Objects;
+    List<b2Body *> m_Bodies;
+
+    b2Vec2 m_Gravity{0, 100.f};
+    b2World m_World{m_Gravity};
+
+    Clock m_PhysicsClock;
 public:
     GameLayer(const RenderPass *pass);
 
@@ -26,6 +34,9 @@ public:
     void Draw(const Framebuffer *fb, const Semaphore *wait, const Semaphore *signal)override;
 
     bool HandleEvent(const Event &e)override;
+
+private:
+    void AddObject(Vector2s position, Vector2s size, Color color, bool is_dynamic = true);
 };
 
 #endif//GAME_LAYER_HPP

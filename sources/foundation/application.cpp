@@ -41,8 +41,8 @@ Application::Application(){
 
     m_Swapchain = new FramebufferChain(&m_MainWindow);
 
-    AddLayer(NewLayer<ImGuiLayer>(m_Swapchain->Pass()));
     AddLayer(NewLayer<GameLayer>(m_Swapchain->Pass()));
+    AddLayer(NewLayer<ImGuiLayer>(m_Swapchain->Pass()));
 }
 
 int Application::Run(){
@@ -53,8 +53,6 @@ int Application::Run(){
         Time current_time = Clock::GetMonotonicTime();
 
         float dt = (current_time - prev_frame_time).AsSeconds();
-        Sleep(Seconds(std::max(0.f, 0.016f - dt)));
-
         prev_frame_time = current_time;
 
         dt = cl.GetElapsedTime().AsSeconds();
@@ -63,6 +61,8 @@ int Application::Run(){
         if(dt <= 0)
             dt = 0.0000001;
         
+        Sleep(Seconds(std::max(0.f, 0.016f - dt)));
+
         m_MainWindow.DispatchEvents();
 
         Tick(dt);
