@@ -1,6 +1,7 @@
 #include "game/game_layer.hpp"
 #include <core/os/clock.hpp>
 #include <core/ranges.hpp>
+#include <core/math/trig.hpp>
 #include <cmath>
 #include <random>
 #include <box2d/b2_body.h>
@@ -26,7 +27,7 @@ Color NiceRandomColor(){
 GameLayer::GameLayer(const RenderPass *pass){
     m_Renderer.Initialize(pass);
 #if 1
-    for(int i = 0; i<40; i++){
+    for(int i = 0; i<10; i++){
         AddObject({rand() % 1280, rand() % 680}, {rand() % 200, rand()%200}, NiceRandomColor());
     }
 #endif
@@ -81,8 +82,8 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
 
     for(auto[it, index]: IndexedRange(m_Bodies)){
         b2Body &body = **it;
-        auto pos = body.GetPosition() - body.GetLocalCenter();
-        m_Renderer.DrawRect(Vector2s{pos.x, pos.y} - m_Objects[index].Size/2, m_Objects[index].Size, body.GetAngle()/3.14159 * 180.f, m_Objects[index].Tint);
+        auto pos = body.GetPosition();
+        m_Renderer.DrawRect(Vector2s{pos.x, pos.y}, m_Objects[index].Size, Math::Deg(body.GetAngle()), m_Objects[index].Tint);
     }
 
     m_Renderer.EndDrawing(signal);
