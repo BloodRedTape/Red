@@ -56,8 +56,9 @@ Color NiceRandomColor(){
     return Color::White;
 }
 
-GameLayer::GameLayer(const RenderPass *pass){
-    m_Renderer.Initialize(pass);
+GameLayer::GameLayer(const RenderPass *pass):
+    m_Renderer(pass)
+{
 #if 1
     for(int i = 0; i<10; i++){
         AddObject({rand() % 1280, rand() % 680}, {rand() % 200, rand()%200}, NiceRandomColor());
@@ -68,10 +69,6 @@ GameLayer::GameLayer(const RenderPass *pass){
     AddObject({300,300}, {100, 100}, Color::Green, true);
 }
 
-
-GameLayer::~GameLayer(){
-    m_Renderer.Finalize();
-}
 
 void GameLayer::Tick(float dt){
     Time time = Clock::GetMonotonicTime();

@@ -39,7 +39,7 @@ private:
 public:
     GameLayer(const RenderPass *pass);
 
-    ~GameLayer();
+    ~GameLayer() = default;
 
     void Tick(float dt)override;
 
