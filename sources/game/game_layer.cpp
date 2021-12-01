@@ -1,6 +1,7 @@
 #include "game/game_layer.hpp"
 #include <core/os/clock.hpp>
 #include <core/ranges.hpp>
+#include <core/print.hpp>
 #include <core/math/trig.hpp>
 #include <cmath>
 #include <random>
@@ -10,6 +11,37 @@
 #include <box2d/b2_fixture.h>
 
 #include <imgui/widgets.hpp>
+#include "foundation/application.hpp"
+
+void ApplyForceContext::OnMouseDown(Vector2s position){
+
+    for(auto body = World->GetBodyList(); body != nullptr; body = body->GetNext()){
+        for(auto fixture = body->GetFixtureList(); fixture != nullptr; fixture = fixture->GetNext()){
+            if(fixture->TestPoint({float(position.x), float(position.y)})){
+                HoveredBody = body;
+                BeginPosition = position;
+                break;
+            }
+        }
+    }
+}
+
+void ApplyForceContext::OnMouseUp(Vector2s position){
+    if(!HoveredBody)return;
+
+    Println("Applied");
+
+
+    auto vec = Vector2f(position - BeginPosition);
+    auto length = std::sqrt(vec.x * vec.x + vec.y * vec.y);
+    auto force = HoveredBody->GetMass() * vec;
+
+
+    b2Vec2 begin = {(float)BeginPosition.x, (float)BeginPosition.y};
+    HoveredBody->ApplyLinearImpulse({force.x, force.y}, begin, true);
+
+    HoveredBody = nullptr;
+}
 
 Color NiceRandomColor(){
     int i = rand() % 3;
@@ -86,10 +118,22 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
         m_Renderer.DrawRect(Vector2s{pos.x, pos.y}, m_Objects[index].Size, Math::Deg(body.GetAngle()), m_Objects[index].Tint);
     }
 
+    m_Renderer.DrawRect(Mouse::RelativePosition(Application::Get().MainWindow()), {10, 10}, Color::Red);
+
+    if(m_Ctx.HoveredBody){
+        m_Renderer.DrawRect(m_Ctx.BeginPosition, {10, 10}, Color::White);
+        m_Renderer.DrawRect(Mouse::RelativePosition(Application::Get().MainWindow()), {10, 10}, Color::White);
+    }
+
     m_Renderer.EndDrawing(signal);
 }
 
 bool GameLayer::HandleEvent(const Event &e){
+
+    if(e.Type == EventType::MouseButtonPress)
+        m_Ctx.OnMouseDown({e.MouseButtonPress.x, e.MouseButtonPress.y});
+    if(e.Type == EventType::MouseButtonRelease)
+        m_Ctx.OnMouseUp({e.MouseButtonRelease.x, e.MouseButtonRelease.y});
     return false;
 }
 

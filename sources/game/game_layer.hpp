@@ -13,6 +13,16 @@ struct Rect{
     Color    Tint;
 };
 
+struct ApplyForceContext{
+    b2World *World = nullptr;
+    b2Body *HoveredBody = nullptr;
+    Vector2s BeginPosition;
+
+    void OnMouseDown(Vector2s position);
+
+    void OnMouseUp(Vector2s position);
+};
+
 class GameLayer: public Layer{
 private:
     RectRenderer m_Renderer;
@@ -24,6 +34,8 @@ private:
     b2World m_World{m_Gravity};
 
     Clock m_PhysicsClock;
+
+    ApplyForceContext m_Ctx{&m_World, nullptr};
 public:
     GameLayer(const RenderPass *pass);
 
