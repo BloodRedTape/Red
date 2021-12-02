@@ -100,6 +100,8 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
 
     m_RectRenderer.DrawRect({0,0}, Vector2s(fb->Size()), Color::Black);
 
+    m_RectRenderer.Flush();
+
     static Vector2f position{200, 200};
     static Vector2f size{100, 100};
     static Vector2f origin = size/2.f;
