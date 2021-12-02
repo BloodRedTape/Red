@@ -5,6 +5,8 @@
 #include <core/os/clock.hpp>
 #include "utils/layers.hpp"
 #include "2d/rect_renderer.hpp"
+#include "2d/circle_renderer.hpp"
+#include "2d/line_renderer.hpp"
 #include <box2d/b2_world.h>
 
 struct Rect{
@@ -25,7 +27,9 @@ struct ApplyForceContext{
 
 class GameLayer: public Layer{
 private:
-    RectRenderer m_Renderer;
+    RectRenderer m_RectRenderer;
+    CircleRenderer m_CircleRenderer;
+    LineRenderer m_LineRenderer;
 
     List<Rect> m_Objects;
     List<b2Body *> m_Bodies;

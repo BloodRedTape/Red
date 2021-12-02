@@ -13,6 +13,11 @@
 #include <imgui/widgets.hpp>
 #include "foundation/application.hpp"
 
+
+Vector2f MakeVec2(b2Vec2 in){
+    return {in.x, in.y};
+}
+
 void ApplyForceContext::OnMouseDown(Vector2s position){
 
     for(auto body = World->GetBodyList(); body != nullptr; body = body->GetNext()){
@@ -57,7 +62,9 @@ Color NiceRandomColor(){
 }
 
 GameLayer::GameLayer(const RenderPass *pass):
-    m_Renderer(pass)
+    m_RectRenderer(pass),
+    m_CircleRenderer(pass),
+    m_LineRenderer(pass)
 {
 #if 1
     for(int i = 0; i<10; i++){
@@ -88,9 +95,9 @@ void GameLayer::Tick(float dt){
 }
 
 void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semaphore *signal){
-    m_Renderer.BeginDrawing(wait, fb);
+    m_RectRenderer.BeginDrawing(wait, fb);
 
-    m_Renderer.DrawRect({0,0}, Vector2s(fb->Size()), Color::Black);
+    m_RectRenderer.DrawRect({0,0}, Vector2s(fb->Size()), Color::Black);
 
     static Vector2f position{200, 200};
     static Vector2f size{100, 100};
@@ -104,25 +111,53 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
     ImGui::SliderFloat("angle", &rotation, -180, 180);
     ImGui::End();
 
-    m_Renderer.DrawRect(Vector2s(position), Vector2s(size), Vector2s(origin), rotation, Color::Mint);
+    m_RectRenderer.DrawRect(Vector2s(position), Vector2s(size), Vector2s(origin), rotation, Color::Mint);
 
     //for(const auto &object: m_Objects)
      //   m_Renderer.DrawRect(Vector2s(object.Position), object.Size, object.Tint);
 
     for(auto[it, index]: IndexedRange(m_Bodies)){
         b2Body &body = **it;
-        auto pos = body.GetPosition();
-        m_Renderer.DrawRect(Vector2s(pos.x, pos.y), m_Objects[index].Size, Math::Deg(body.GetAngle()), m_Objects[index].Tint);
+
+        m_RectRenderer.DrawRect(MakeVec2(body.GetPosition()), m_Objects[index].Size, Math::Deg(body.GetAngle()), m_Objects[index].Tint);
     }
 
-    m_Renderer.DrawRect(Mouse::RelativePosition(Application::Get().MainWindow()), {10, 10}, Color::Red);
+
+
+
+    static Semaphore sync;
+    m_RectRenderer.EndDrawing(&sync);
+
+    m_CircleRenderer.BeginDrawing(&sync, fb);
+
+    m_CircleRenderer.DrawCircle({300, 300}, 40, Color::Red);
+    m_CircleRenderer.DrawCircle(Mouse::RelativePosition(Application::Get().MainWindow()), 6, Color::Red);
 
     if(m_Ctx.HoveredBody){
-        m_Renderer.DrawRect(m_Ctx.BeginPosition, {10, 10}, Color::White);
-        m_Renderer.DrawRect(Mouse::RelativePosition(Application::Get().MainWindow()), {10, 10}, Color::White);
+        m_CircleRenderer.DrawCircle(m_Ctx.BeginPosition, 5, Color::White);
+        m_CircleRenderer.DrawCircle(Mouse::RelativePosition(Application::Get().MainWindow()), 5, Color::White);
     }
 
-    m_Renderer.EndDrawing(signal);
+    static Semaphore sync2;
+    m_CircleRenderer.EndDrawing(&sync2);
+    m_LineRenderer.BeginDrawing(&sync2, fb);
+
+    List<Vector2s> points = {
+            {100, 100},
+            {200, 120},
+            {300, 160},
+            {400, 180}
+    };
+    m_LineRenderer.DrawLines(points, Color::White, 10);
+    m_LineRenderer.DrawLine({300, 300}, {800, 600}, Color::LightBlue);
+
+    if(m_Ctx.HoveredBody){
+        auto begin = m_Ctx.BeginPosition;
+        auto end = Mouse::RelativePosition(Application::Get().MainWindow());
+        m_LineRenderer.DrawLine(begin, end, Color::White, 5);
+    }
+
+    m_LineRenderer.EndDrawing(signal);
 }
 
 bool GameLayer::HandleEvent(const Event &e){
