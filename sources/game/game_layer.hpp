@@ -31,6 +31,9 @@ private:
     CircleRenderer m_CircleRenderer;
     LineRenderer m_LineRenderer;
 
+    Semaphore m_BeginFrame[3];
+    Semaphore m_EndFrame[3];
+
     List<Rect> m_Objects;
     List<b2Body *> m_Bodies;
 

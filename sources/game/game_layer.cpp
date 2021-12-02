@@ -1,15 +1,12 @@
 #include "game/game_layer.hpp"
-#include <core/os/clock.hpp>
 #include <core/ranges.hpp>
 #include <core/print.hpp>
 #include <core/math/trig.hpp>
 #include <cmath>
-#include <random>
 #include <box2d/b2_body.h>
-#include <box2d/b2_shape.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_fixture.h>
-
+#include <graphics/api/gpu.hpp>
 #include <imgui/widgets.hpp>
 #include "foundation/application.hpp"
 
@@ -95,7 +92,11 @@ void GameLayer::Tick(float dt){
 }
 
 void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semaphore *signal){
-    m_RectRenderer.BeginDrawing(wait, fb);
+    GPU::SyncSemaphores(*wait, {m_BeginFrame});
+
+    m_RectRenderer.BeginDrawing(&m_BeginFrame[0], fb);
+    m_CircleRenderer.BeginDrawing(&m_BeginFrame[1], fb);
+    m_LineRenderer.BeginDrawing(&m_BeginFrame[2], fb);
 
     m_RectRenderer.DrawRect({0,0}, Vector2s(fb->Size()), Color::Black);
 
@@ -122,14 +123,6 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
         m_RectRenderer.DrawRect(MakeVec2(body.GetPosition()), m_Objects[index].Size, Math::Deg(body.GetAngle()), m_Objects[index].Tint);
     }
 
-
-
-
-    static Semaphore sync;
-    m_RectRenderer.EndDrawing(&sync);
-
-    m_CircleRenderer.BeginDrawing(&sync, fb);
-
     m_CircleRenderer.DrawCircle({300, 300}, 40, Color::Red);
     m_CircleRenderer.DrawCircle(Mouse::RelativePosition(Application::Get().MainWindow()), 6, Color::Red);
 
@@ -138,18 +131,14 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
         m_CircleRenderer.DrawCircle(Mouse::RelativePosition(Application::Get().MainWindow()), 5, Color::White);
     }
 
-    static Semaphore sync2;
-    m_CircleRenderer.EndDrawing(&sync2);
-    m_LineRenderer.BeginDrawing(&sync2, fb);
-
     List<Vector2s> points = {
             {100, 100},
             {200, 120},
             {300, 160},
             {400, 180}
     };
-    m_LineRenderer.DrawLines(points, Color::White, 10);
-    m_LineRenderer.DrawLine({300, 300}, {800, 600}, Color::LightBlue);
+    m_LineRenderer.DrawLines(points, Color::White, 5);
+    m_LineRenderer.DrawLine({300, 300}, {800, 600}, Color::LightBlue, 5);
 
     if(m_Ctx.HoveredBody){
         auto begin = m_Ctx.BeginPosition;
@@ -157,7 +146,12 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
         m_LineRenderer.DrawLine(begin, end, Color::White, 5);
     }
 
-    m_LineRenderer.EndDrawing(signal);
+
+    m_RectRenderer.EndDrawing(&m_EndFrame[0]);
+    m_CircleRenderer.EndDrawing(&m_EndFrame[1]);
+    m_LineRenderer.EndDrawing(&m_EndFrame[2]);
+
+    GPU::SyncSemaphores({m_EndFrame}, *signal);
 }
 
 bool GameLayer::HandleEvent(const Event &e){
