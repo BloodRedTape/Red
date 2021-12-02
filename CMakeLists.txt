@@ -2,12 +2,16 @@ cmake_minimum_required(VERSION 3.10)
 
 project(Red)
 
+set(CMAKE_CXX_STANDARD_REQUIRED 17)
+set(CMAKE_CXX_STANDARD 17)
+
 add_subdirectory(StraitXPackages/Base)
 add_subdirectory(StraitXPackages/ImGui)
 add_subdirectory(StraitXPackages/2D)
 
-set(BOX2D_BUILD_TESTBED OFF)
-set(BOX2D_BUILD_UNIT_TESTS OFF)
+set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE)
+set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(thirdparty/box2d)
 
 set(RED_SOURCES

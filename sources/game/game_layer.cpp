@@ -112,7 +112,7 @@ void GameLayer::Draw(const Framebuffer *fb, const Semaphore *wait, const Semapho
     for(auto[it, index]: IndexedRange(m_Bodies)){
         b2Body &body = **it;
         auto pos = body.GetPosition();
-        m_Renderer.DrawRect(Vector2s{pos.x, pos.y}, m_Objects[index].Size, Math::Deg(body.GetAngle()), m_Objects[index].Tint);
+        m_Renderer.DrawRect(Vector2s(pos.x, pos.y), m_Objects[index].Size, Math::Deg(body.GetAngle()), m_Objects[index].Tint);
     }
 
     m_Renderer.DrawRect(Mouse::RelativePosition(Application::Get().MainWindow()), {10, 10}, Color::Red);

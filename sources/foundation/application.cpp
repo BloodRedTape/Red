@@ -5,6 +5,7 @@
 #include "game/game_layer.hpp"
 #include <cmath>
 #include <core/os/sleep.hpp>
+#include <core/algorithm.hpp>
 
 struct ImGuiLayer: public Layer{
     ImGuiBackend Back;
@@ -61,7 +62,7 @@ int Application::Run(){
         if(dt <= 0)
             dt = 0.0000001;
         
-        Sleep(Seconds(std::max(0.f, 0.016f - dt)));
+        Sleep(Seconds(Max(0.f, 0.016f - dt)));
 
         m_MainWindow.DispatchEvents();
 

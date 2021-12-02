@@ -12,7 +12,7 @@ struct Object{
 
 int StraitXMain(Span<const char *> args){
 
-    std::list<char> a = {'a', 'b', 'c', 'd', 'e'};
+    List<char> a = {'a', 'b', 'c', 'd', 'e'};
 
     bool b = IsReverseRange<List<char>>::Value;
 
