@@ -9,10 +9,10 @@
 #include "2d/line_renderer.hpp"
 #include <box2d/b2_world.h>
 
-struct Rect{
-    Vector2f Position;
-    Vector2s Size;
-    Color    Tint;
+struct Block{
+    Texture2D *Texture = nullptr;
+    b2Body    *Body    = nullptr;
+    Vector2s   Size;
 };
 
 struct ApplyForceContext{
@@ -28,14 +28,12 @@ struct ApplyForceContext{
 class GameLayer: public Layer{
 private:
     RectRenderer m_RectRenderer;
-    CircleRenderer m_CircleRenderer;
-    LineRenderer m_LineRenderer;
 
-    Semaphore m_BeginFrame[3];
-    Semaphore m_EndFrame[3];
+    List<Block> m_Blocks;
 
-    List<Rect> m_Objects;
-    List<b2Body *> m_Bodies;
+    Texture2D *m_Background = nullptr;
+
+    FixedList<Texture2D *, 9> m_BlockTextures;
 
     b2Vec2 m_Gravity{0, 100.f};
     b2World m_World{m_Gravity};
@@ -55,7 +53,7 @@ public:
     bool HandleEvent(const Event &e)override;
 
 private:
-    void AddObject(Vector2s position, Vector2s size, Color color, bool is_dynamic = true);
+    void AddGameBlock(Vector2s position, Texture2D *texture, bool is_dynamic = true);
 };
 
 #endif//GAME_LAYER_HPP
