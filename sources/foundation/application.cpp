@@ -18,21 +18,21 @@ struct ImGuiLayer: public Layer{
         Back.Finalize();
     }
 
-    void Tick(float dt){
+    void Tick(float dt)override{
         Back.NewFrame(dt, Mouse::RelativePosition(Application::Get().MainWindow()), Vector2s(Application::Get().MainWindow().Size()));
     }
 
-    void Draw(const Framebuffer *fb, const Semaphore *wait, const Semaphore *signal){
+    void Draw(const Framebuffer *fb, const Semaphore *wait, const Semaphore *signal)override{
         Back.RenderFrame(fb, wait, signal);
     }
 
-    bool HandleEvent(const Event &e){
-        return false;
+    bool HandleEvent(const Event &e)override{
+        return Back.HandleEvent(e);
     }
 };
 
 Application::Application(){
-    m_MainWindow.Open(1280, 720, "UtterCraft");
+    m_MainWindow.Open(1280, 720, "Red");
 
     Function<void(const Event&)> handler;
     handler.Bind<Application, &Application::OnEvent>(this);
