@@ -7,9 +7,6 @@
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_fixture.h>
 #include <graphics/api/gpu.hpp>
-#include <imgui/widgets.hpp>
-#include "foundation/application.hpp"
-
 
 Vector2f MakeVec2(b2Vec2 in){
     return {in.x, in.y};
@@ -35,7 +32,6 @@ void ApplyForceContext::OnMouseUp(Vector2s position){
 
 
     auto vec = Vector2f(position - BeginPosition);
-    auto length = std::sqrt(vec.x * vec.x + vec.y * vec.y);
     auto force = HoveredBody->GetMass() * vec;
 
 
@@ -123,34 +119,6 @@ bool GameLayer::HandleEvent(const Event &e){
         m_Ctx.OnMouseUp({e.MouseButtonRelease.x, e.MouseButtonRelease.y});
     return false;
 }
-
-#if 0
-void GameLayer::AddObject(Vector2s position, Vector2s size, Color color, bool is_dynamic){
-    m_Objects.Add({Vector2f(position), size, color});
-
-    position.x += size.x/2.f;
-    position.y += size.y/2.f;
-
-    b2BodyDef def;
-    def.position = b2Vec2(position.x, position.y);
-    def.type = is_dynamic ? b2_dynamicBody : b2_staticBody;
-
-    b2Body *body = m_World.CreateBody(&def);
-
-    b2PolygonShape box;
-    box.SetAsBox(size.x/2.f, size.y/2.f);
-
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &box;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
-
-    /*b2Fixture *fixture = */body->CreateFixture(&fixtureDef);
-    body->SetFixedRotation(false);
-    m_Bodies.Add(body);
-    
-}
-#endif
 
 void GameLayer::AddGameBlock(Vector2s position, Texture2D *texture, bool is_dynamic){
     b2BodyDef def;

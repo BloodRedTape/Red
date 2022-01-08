@@ -1,5 +1,4 @@
 #include "foundation/application.hpp"
-#include <core/print.hpp>
 #include <core/ranges.hpp>
 #include <imgui/backend.hpp>
 #include "game/game_layer.hpp"
@@ -27,7 +26,8 @@ struct ImGuiLayer: public Layer{
     }
 
     bool HandleEvent(const Event &e)override{
-        return Back.HandleEvent(e);
+        Back.HandleEvent(e);
+        return false;
     }
 };
 

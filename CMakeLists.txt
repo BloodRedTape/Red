@@ -17,8 +17,7 @@ add_subdirectory(thirdparty/box2d)
 set(RED_SOURCES
     sources/main.cpp
     sources/foundation/application.cpp
-    sources/utils/helpers.cpp
-    sources/game/game_layer.cpp
+        sources/game/game_layer.cpp
 )
 
 set(RED_INCLUDE
